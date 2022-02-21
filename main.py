@@ -30,7 +30,3 @@ if reply == True:
   sendGroupMessage(groupChats, groupMessage)
 else:
   print(red, "Not Sending any Group Messages today! Nope! :( ", reset)
-
-# Telegram : Name of Bot : ParityIntegrationSupportBot
-# Telegram : bot username : IntegrationSupportBot
-# run this script : python3 main.py
