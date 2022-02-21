@@ -5,14 +5,15 @@
 2. Using a python script to send a predefined and preformatted message in all Telegram group chats that the bot is added. 
 
 ## Prerequisites
-1. python3 installed
-2. requests module installed
-3. dotenv module with installed (`pip3 install python-dotenv`)
+1. `python3` installed
+2. `requests` module installed
+3. `dotenv` module with installed (`pip3 install python-dotenv`)
 
 ## Telegram Bot Settings
 1. Download and install locally telegram app
 2. Talk to Botfather & create your first bot (by following the steps described [here](https://sendpulse.com/knowledge-base/chatbot/create-telegram-chatbot) (section "How to Create a New Bot for Telegram")
-3. Save your bots API key in .env file
+3. Save your bots API key in a `.env` file that you add in the root directory.
+4. Your `.env` file chould contain one line of text with the following format `API_KEY = "110201543:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw`
 
 ## Update Group Message
 1. You can edit the contents of the file `groupMessage.txt`(located in the `src` directory) and add the text of your choice.

@@ -5,7 +5,7 @@ from dotenv import load_dotenv, find_dotenv
 
 # Your API_KEY should be saved in the same directory in a file called .env
 # which contains one line of text with the following format
-# API_KEY = "980776865:hgjafhuergaenbvunxzvjawh"
+# API_KEY = "110201543:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw"
 load_dotenv(find_dotenv())
 API_KEY = os.environ.get("API_KEY")
 
