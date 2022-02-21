@@ -1,0 +1,10 @@
+⚠️ <b> Example of Telegram Bot - Message Sent from Python Script </b> ⚠️
+
+✅ <code> Example of inline fixed-width code formatting </code> ✅
+
+🏁 <a href="http://www.example.com/"> Example of an inline URL formatted text</a> 🏁
+
+🔸 <i>italic</i>, <em> Example of text formatted in italic</em> 🔸
+
+🎯 <u>underline</u>, <ins> Example of underlined text </ins> 🎯
+
