@@ -19,9 +19,9 @@ if reply == False:
   print(red, "Not Sending any Group Messages today! Nope! :( ", reset)
   sys.exit()
 
-print(yellow, "The group message will be sent to the following Group Chats", reset)
-for x in enumerate(groupChats):
-  print(groupChats)
+# print(yellow, "The group message will be sent to the following Group Chats", reset)
+# for x in enumerate(groupChats):
+#   print(groupChats)
 
 question = "Are you sure you would like to send a group message to the above groups ?"
 reply = userConfirmation(question, default="no")

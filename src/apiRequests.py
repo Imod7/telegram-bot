@@ -17,18 +17,22 @@ def getChatIds():
   jsonResponse = response.json()
   groupChats = {}
   for x in jsonResponse['result']:
-    if (x['message']['chat']['type'] == 'group'):
+    if (('message' in x) and (x['message']['chat']['type'] == 'group')):
       groupChats[x['message']['chat']['id']] = x['message']['chat']['title']
   return groupChats
 
 # Function that sends the groupMessage through our bot to all the telegram group chats.
 def sendGroupMessage(groupChats, groupMessage):
   sendMsgUrl = "https://api.telegram.org/bot" + API_KEY + "/sendMessage"
+  print("Sending to Group Chats :") 
   for key in groupChats:
-    print(green, "Sending to Group Chat : ", groupChats[key], reset)
-    parameters = {
-      "chat_id" : key,
-      "text" : groupMessage,
-      "parse_mode" : "html"
-    }
-    response = requests.get(sendMsgUrl, data = parameters)
+    print(green, "✅", groupChats[key])
+    # parameters = {
+    #   "chat_id" : key,
+    #   "text" : groupMessage,
+    #   "parse_mode" : "html"
+    # }
+    # response = requests.get(sendMsgUrl, data = parameters)
+    send_text = 'https://api.telegram.org/bot' + API_KEY + '/sendMessage?chat_id=' + str(key) + '&parse_mode=HTML&text=' + groupMessage
+    response = requests.get(send_text)
+  print(reset)
