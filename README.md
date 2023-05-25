@@ -18,7 +18,7 @@
 1. Download and install locally telegram app
 2. Talk to Botfather & create your first bot (by following the steps described [here](https://sendpulse.com/knowledge-base/chatbot/create-telegram-chatbot) (section "How to Create a New Bot for Telegram")
 3. Copy the API Token of your bot
-   Note : if you already have a bot, you can write `/mybots` to BotFather and it will return the name of your bot. Then you can click on button `API Token` and it will return the corresponding token.
+   - Note : if you already have a bot, you can write `/mybots` to BotFather and it will return the name of your bot. Then you can click on button `API Token` and it will return the corresponding token.
 4. Create a `.env` file in the root folder of this project/repository.
 5. Paste your token in your `.env` file. The contents of your `.env` file should look like the following example :  
     ```
