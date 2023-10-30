@@ -2,8 +2,8 @@
 
 ## Description
 This project guides you through on how to :
-1. build a simple Telegram Bot and then
-2. use a python script to send a predefined and preformatted message in all Telegram group chats that the bot is added.
+1. Build a simple Telegram Bot and then
+1. Use a python script to send a predefined and preformatted message in all Telegram group chats that the bot is added.
 
 ## Prerequisites
 1. Install `python3` (if you already have `brew` you can use `brew install python3` to install it)
@@ -36,9 +36,14 @@ This project guides you through on how to :
     ```
 1. Create at least one group chat in your telegram app and add your telegram bot. In this chat a message will be send from the bot through this python script (the script that will be executed in the "Run script" step).
 
-### Update Group Message
-1. You can edit the contents of the file `groupMessage.txt`(located in the `src` directory) and add the text of your choice.
+### Update Group Message file
+1. You can edit the contents of the file `groupMessage.txt`(located in the `files` directory) and add the text of your choice.
 1. You can format it as `Markdown` or `HTML` by using the tags mentioned [here](https://core.telegram.org/bots/api#markdownv2-style) and [here](https://core.telegram.org/bots/api#html-style) respectively.
+
+### Add the Group Chats file
+1. You can add the group chats that you want to send the message to in the file `groups.txt`(located in the `files` directory).
+1. The format should be `-TelegramChatID, TelegramChatName`, e.g. `-123456789, MyGroupChatName`.
+1. If you have multiple group chats you would like to send the message to, you can add them in new lines.
 
 ### Run script
 1. While in the root directory of this project, run command `python3 main.py` (from the terminal).
@@ -51,6 +56,13 @@ This project guides you through on how to :
 
 ## Resources
 - [Telegram Bot - how to get a group chat id?](https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id)
+    - `https://api.telegram.org/bot<YourBOTToken>/getUpdates`
+
+## Troubleshooting
+- If you execute the script and no messages are posted in the chat
+    - Check if the formatted text has opening and closing tags
+    - Get the whole command and paste it directly from your browser
+    - if there is an error it will
 
 ## Short Walkthrough gif
 ![Recording](media/telegram-bot-python.gif "Short recording from the Telegram Bot + python script")

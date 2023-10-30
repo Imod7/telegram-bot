@@ -1,0 +1,25 @@
+⚠️ <b>Integration Report for Client Release v1.1.0</b> ⚠️
+A new <a href="https://github.com/paritytech/polkadot-sdk/releases/tag/polkadot-v1.1.0">v1.1.0</a> node implementation has been released.
+
+<b>Upgrade Priority</b>
+This is a <b>Medium</b> priority release for Kusama and Polkadot, please update nodes as appropriate.
+
+🎯 <b>Releases Split and Monorepo</b> 🎯
+- The release process is split into <b>Client Releases</b> <i>(node implementation)</i> and <b>Runtime Releases.</b> The current announcement refers to Client Release as mentioned in the title.
+- For the client releases you should refer to the <a href="https://github.com/paritytech/polkadot-sdk">polkadot-sdk</a> repository.
+- For the runtime releases you should refer to the <a href="https://github.com/polkadot-fellows/runtimes">polkadot-fellows/runtimes</a> repository.
+- The 3 repos <a href="https://github.com/paritytech/substrate">substrate</a>, <a href="https://github.com/paritytech/polkadot">polkadot</a> and <a href="https://github.com/paritytech/cumulus">cumulus</a> have now been merged to one repo <a href="https://github.com/paritytech/polkadot-sdk">polkadot-sdk</a>. You can find more details about this <a href="https://www.notion.so/fbc4cecc2c46443fb37b9eeec2f0d85f?pvs=21">here</a>.
+
+⚠️ <strong>New Docker base image</strong> ⚠️
+- The Docker image for Polkadot is now based on <code>ubuntu:22.04</code>. It was <code>ubuntu:20.04</code> until now.
+- The default user also changed from <code>polkadot</code> (home in <code>/polkadot</code>) to <code>parity</code> (home in <code>/parity</code>).
+
+⚠️ <strong>Other Noteworthy Information</strong> ⚠️
+- If you want to run your node with <code>polkadot-dev</code> as chain, you will need to compile your node with <code>--features polkadot-native</code>. In the future the support for <code>polkadot-dev</code> or <code>kusama-dev</code> will be removed completely.
+- <code>try-runtime</code> subcommand is deprecated (<a href="https://github.com/paritytech/substrate/pull/14731">PR</a>). There is now a standalone <a href="https://github.com/paritytech/try-runtime-cli/pull/6">CLI</a>.
+
+📚<b>More information and Official Announcements</b> 📚
+For more information, please refer to the <a href="https://github.com/paritytech/polkadot-sdk/releases/tag/polkadot-v1.1.0">Release Notes v1.1.0</a> and the official announcements posted in the Element Channels :
+- <a href="https://matrix.to/%23/%23polkadot-announcements:parity.io">Polkadot Announcements</a>
+- <a href="https://matrix.to/%23/%23polkadotvalidatorlounge:web3.foundation">Polkadot Validator Lounge</a>
+- <a href="https://matrix.to/%23/%23KusamaValidatorLounge:polkadot.builders">Kusama Validator Lounge</a>

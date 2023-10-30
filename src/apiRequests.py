@@ -9,30 +9,11 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 API_KEY = os.environ.get("API_KEY")
 
-# Function that retrieves the chat_ids of all the group chats
-# in which the bot is included
-def getChatIds():
-  getUpdatesUrl = "https://api.telegram.org/bot" + API_KEY + "/getUpdates"
-  response = requests.get(getUpdatesUrl)
-  jsonResponse = response.json()
-  groupChats = {}
-  for x in jsonResponse['result']:
-    if (('message' in x) and (x['message']['chat']['type'] == 'group')):
-      groupChats[x['message']['chat']['id']] = x['message']['chat']['title']
-  return groupChats
-
 # Function that sends the groupMessage through our bot to all the telegram group chats.
 def sendGroupMessage(groupChats, groupMessage):
   sendMsgUrl = "https://api.telegram.org/bot" + API_KEY + "/sendMessage"
   print("Sending to Group Chats :") 
-  for key in groupChats:
-    print(green, "✅", groupChats[key])
-    # parameters = {
-    #   "chat_id" : key,
-    #   "text" : groupMessage,
-    #   "parse_mode" : "html"
-    # }
-    # response = requests.get(sendMsgUrl, data = parameters)
+  for key, value in groupChats.items():
+    print(green, "✅", value)
     send_text = 'https://api.telegram.org/bot' + API_KEY + '/sendMessage?chat_id=' + str(key) + '&parse_mode=HTML&text=' + groupMessage
     response = requests.get(send_text)
-  print(reset)

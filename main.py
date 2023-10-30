@@ -2,15 +2,11 @@ from src.colors import *
 from src.userConfirmation import *
 from src.apiRequests import *
 
-groupChats = getChatIds()
-
-# Opens the groupMessage file which contains the text 
-# we would like to send to the above retrieved group chats.
-f = open("groupMessage.txt", "r")
+f = open("files/groupMessage.txt", "r")
 groupMessage = f.read()
 
-# Double check that the groupMessage.txt file contains the text
-# you would like to convey to the above retrieved group chats.
+# Question to confirm that the groupMessage.txt file contains the message
+# we would like to send to the group chats.
 print(yellow, "Group message that will be sent to the Group Chats", reset)
 print(groupMessage)
 question = "Is the group message correct ?"
@@ -19,13 +15,23 @@ if reply == False:
   print(red, "Not Sending any Group Messages today! Nope! :( ", reset)
   sys.exit()
 
-# print(yellow, "The group message will be sent to the following Group Chats", reset)
-# for x in enumerate(groupChats):
-#   print(groupChats)
+# Retrieving the group chats from the groups.txt file.
+groupChats = {}
+print(yellow, "The group message will be sent to the following Group Chats", reset)
+with open('files/groups.txt') as f:
+  lines = f.readlines()
+  for line in lines:
+    currentline = line.split(",")
+    groupChats[currentline[0]] = currentline[1]
 
+for key, value in groupChats.items():
+  print(value)
+
+# Question to confirm that the message will be sent to the correct group chats.
 question = "Are you sure you would like to send a group message to the above groups ?"
 reply = userConfirmation(question, default="no")
 
+# Based on the previous answers the message will be sent or not.
 if reply == True:
   sendGroupMessage(groupChats, groupMessage)
 else:

@@ -1,7 +1,7 @@
 import sys
 from src.colors import *
 
-# Function that get user confirmation (yes or no) to the 
+# Function that gets user confirmation (yes or no) to the 
 # corresponding question.
 def userConfirmation(question, default="no"):
   valid = {"yes": True, "y": True, "ye": True, "no": False, "n": False}
