@@ -45,6 +45,11 @@ This project guides you through on how to :
 1. The format should be `-TelegramChatID, TelegramChatName`, e.g. `-123456789, MyGroupChatName`.
 1. If you have multiple group chats you would like to send the message to, you can add them in new lines.
 
+### Recommended Last Checks
+1. Always send the msg to a test group (e.g. the Integration Testing Playground group) first to check that the message is sent correctly. Then you can send to the designated groups all at once.
+1. If you notice that the message is sent for example half or not at all, this might be related to the formatting so check the file `groupMessage.txt`` and look for special characters (like &) that might interfere with the HTML formatting (which is currently set in the script). Replace the problematic character with the corresponding character in HTML specification.
+
+
 ### Run script
 1. While in the root directory of this project, run command `python3 main.py` (from the terminal).
 1. Check in the corresponding Telegram chats if the message was posted successfully and with the expected formatting.
@@ -53,16 +58,9 @@ This project guides you through on how to :
     deactivate
     ```
 
-
 ## Resources
 - [Telegram Bot - how to get a group chat id?](https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id)
     - `https://api.telegram.org/bot<YourBOTToken>/getUpdates`
-
-## Troubleshooting
-- If you execute the script and no messages are posted in the chat
-    - Check if the formatted text has opening and closing tags
-    - Get the whole command and paste it directly from your browser
-    - if there is an error it will
 
 ## Short Walkthrough gif
 ![Recording](media/telegram-bot-python.gif "Short recording from the Telegram Bot + python script")
