@@ -45,6 +45,25 @@ This project guides you through on how to :
 1. The format should be `-TelegramChatID, TelegramChatName`, e.g. `-123456789, MyGroupChatName`.
 1. If you have multiple group chats you would like to send the message to, you can add them in new lines.
 
+
+### Add the Chatbot to a new Group Chat
+If the chatbot needs to be added to a new group chat (that is not included in the `groups.txt` file), you can do the following:
+1. You can add the bot to the group as you would add any member to the telegram group chat.
+1. Then you need to retrieve the corresponding group chat id.
+1. You do this by following this guide [Telegram Bot - how to get a group chat id?](https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id)
+
+    ```
+    https://api.telegram.org/bot<YourBOTToken>/getUpdates
+    ```
+
+CAUTION
+- Sometimes when you add the chatbot into a new group chat and I go the `getUpdates` endpoint does not work and is showing a blank page so no group chat ids. 
+- In this case you can use a hacky way to retrieve it.
+- Just go into one of the test groups where the chatbot is already added, remove the chatbot and add it again. 
+- Then the endpoint for some reason gets updated and you can see the full list of group chat ids where it is included.
+- If you search the page based on the name of the new group chat, you can find the corresponding entry and copy the chat id.
+- Then you can also add this chat id in the `groups.txt` file to have it ready for future use.
+
 ### Recommended Last Checks
 1. Always send the msg to a test group (e.g. the Integration Testing Playground group) first to check that the message is sent correctly. Then you can send to the designated groups all at once.
 1. If you notice that the message is sent for example half or not at all, this might be related to the formatting so check the file `groupMessage.txt`` and look for special characters (like &) that might interfere with the HTML formatting (which is currently set in the script). Replace the problematic character with the corresponding character in HTML specification.
@@ -57,10 +76,6 @@ This project guides you through on how to :
     ```
     deactivate
     ```
-
-## Resources
-- [Telegram Bot - how to get a group chat id?](https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id)
-    - `https://api.telegram.org/bot<YourBOTToken>/getUpdates`
 
 ## Short Walkthrough gif
 ![Recording](media/telegram-bot-python.gif "Short recording from the Telegram Bot + python script")
