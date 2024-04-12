@@ -1,6 +1,6 @@
 certifi==2023.7.22
 charset-normalizer==3.1.0
-idna==3.4
+idna==3.7
 protobuf==4.23.2
 python-dotenv==1.0.0
 requests==2.31.0
