@@ -77,5 +77,21 @@ CAUTION
     deactivate
     ```
 
+## Maintenance
+Ensure all dependencies are up to date. To check for new updates, run:
+```
+pip list --outdated
+```
+
+For each outdated package, run the command:
+```
+pip install --upgrade <package_name>
+```
+
+After updating all packages, save the current versions in the `requirements.txt` file by running:
+```
+pip freeze > requirements.txt
+```
+
 ## Short Walkthrough gif
 ![Recording](media/telegram-bot-python.gif "Short recording from the Telegram Bot + python script")
