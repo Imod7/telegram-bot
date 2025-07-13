@@ -93,5 +93,10 @@ After updating all packages, save the current versions in the `requirements.txt`
 pip freeze > requirements.txt
 ```
 
+## Troubleshooting
+- If you get a `ModuleNotFoundError: No module named 'requests'` error when running `python3 main.py`, it indicates that the virtual environment is not activated. To resolve this, activate the virtual environment with `source env-telegram-bot/bin/activate`.
+- If the message is not sent to one of the Telegram groups included in the list, use `https://api.telegram.org/bot<YourBOTToken>/getUpdates` in your browser to verify the group/chat ID. If the chat ID is incorrect, update it with the correct one.
+- When sending messages through Telegram, you need to replace special characters like `#` (with `%23`) in the `groupMessage.txt` otherwise the message will be sent half. Also, `&` might need to be replaced.
+
 ## Short Walkthrough gif
 ![Recording](media/telegram-bot-python.gif "Short recording from the Telegram Bot + python script")
