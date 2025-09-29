@@ -70,9 +70,16 @@ CAUTION
 
 
 ### Run script
-1. While in the root directory of this project, run command `python3 main.py` (from the terminal).
-1. Check in the corresponding Telegram chats if the message was posted successfully and with the expected formatting.
-1. When you are finished with the script, you can deactivate the virtual environment with the command :
+1. While in the root directory of this project, make sure to activate the virtual environment with the command :
+    ```
+    source env-telegram-bot/bin/activate
+    ```
+2. Double check you have the right groups in the `groups.txt` file.
+3. Make sure you do not have any special characters in the `groupMessage.txt` file. Check in the `Troubleshooting` section on what to avoid.
+4. Double check you have the API key in the `.env` file.
+5. Run command `python3 main.py` (from the terminal).
+6. Check in the corresponding Telegram chats if the message was posted successfully and with the expected formatting.
+7. When you are finished with the script, you can deactivate the virtual environment with the command :
     ```
     deactivate
     ```
@@ -94,9 +101,12 @@ pip freeze > requirements.txt
 ```
 
 ## Troubleshooting
+- When sending messages through Telegram, you need to:
+    - replace special characters like `#` (with `%23`) in the `groupMessage.txt` otherwise the message will be sent half. 
+    - Replace `&` with `&amp;`
+    - Do not use `<br>` tag. It will change lines automatically.
 - If you get a `ModuleNotFoundError: No module named 'requests'` error when running `python3 main.py`, it indicates that the virtual environment is not activated. To resolve this, activate the virtual environment with `source env-telegram-bot/bin/activate`.
 - If the message is not sent to one of the Telegram groups included in the list, use `https://api.telegram.org/bot<YourBOTToken>/getUpdates` in your browser to verify the group/chat ID. If the chat ID is incorrect, update it with the correct one.
-- When sending messages through Telegram, you need to replace special characters like `#` (with `%23`) in the `groupMessage.txt` otherwise the message will be sent half. Also, `&` might need to be replaced.
 
 ## Short Walkthrough gif
 ![Recording](media/telegram-bot-python.gif "Short recording from the Telegram Bot + python script")
