@@ -85,20 +85,22 @@ CAUTION
     ```
 
 ## Maintenance
-Ensure all dependencies are up to date. To check for new updates, run:
-```
-pip list --outdated
-```
+Ensure all dependencies are up to date.
 
-For each outdated package, run the command:
-```
-pip install --upgrade <package_name>
-```
+- Check for outdated packages:
+    ```
+    pip list --outdated
+    ```
 
-After updating all packages, save the current versions in the `requirements.txt` file by running:
-```
-pip freeze > requirements.txt
-```
+- Upgrade packages to the latest available versions:
+    ```bash
+    pip install --upgrade <package_name>
+    ```
+
+- Update the `requirements.txt` file to reflect the new versions:
+    ```
+    pip freeze > requirements.txt
+    ```
 
 ## Troubleshooting
 - When sending messages through Telegram, you need to:
