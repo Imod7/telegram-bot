@@ -12,8 +12,15 @@ API_KEY = os.environ.get("API_KEY")
 # Function that sends the groupMessage through our bot to all the telegram group chats.
 def sendGroupMessage(groupChats, groupMessage):
   sendMsgUrl = "https://api.telegram.org/bot" + API_KEY + "/sendMessage"
-  print("Sending to Group Chats :") 
+  print("Sending to Group Chats :")
   for key, value in groupChats.items():
-    print(green, "✅", value)
-    send_text = 'https://api.telegram.org/bot' + API_KEY + '/sendMessage?chat_id=' + str(key) + '&parse_mode=HTML&text=' + groupMessage
-    response = requests.get(send_text)
+    payload = {
+      "chat_id": str(key),
+      "parse_mode": "HTML",
+      "text": groupMessage,
+    }
+    response = requests.post(sendMsgUrl, json=payload)
+    if response.ok:
+      print(green, "✅", value)
+    else:
+      print(red, "❌", value, "-", response.json().get("description", response.text))
