@@ -1,7 +1,7 @@
 from openpyxl import load_workbook
 from src.colors import *
 
-EXCEL_PATH = "files/External Partners Channels.xlsx"
+EXCEL_PATH = "files/Support Channels - Integrations.xlsx"
 SHEET_NAME = "Channels"
 
 def getAvailableColumns(filepath=EXCEL_PATH):
