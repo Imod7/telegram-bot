@@ -2,21 +2,24 @@ import os
 from src.colors import *
 from src.userConfirmation import *
 from src.apiRequests import *
-from src.excelUpdater import EXCEL_PATH
+from src.excelUpdater import promptExcelPath
 
 print(f"\n{DOUBLE_LINE}")
 print(f"  {bold}{slate}Telegram Group Message Sender{reset}")
 print(DOUBLE_LINE)
 
-# Check if the Excel tracking file exists
-update_excel = False
-if os.path.exists(EXCEL_PATH):
-  print(f"\n  {sage}Excel file found:{reset} {stone}{EXCEL_PATH}{reset}")
-  question = "Update the Excel tracker after sending?"
-  update_excel = userConfirmation(question, default="no")
-else:
-  print(f"\n  {sand}No Excel file found at {EXCEL_PATH}")
-  print(f"  {stone}Skipping Excel tracking.{reset}")
+# Ask whether to update an Excel tracker, and if so which file
+excel_path = None
+question = "Update an Excel tracker after sending?"
+update_excel = userConfirmation(question, default="no")
+if update_excel:
+  excel_path = promptExcelPath()
+  if os.path.exists(excel_path):
+    print(f"  {sage}Excel file found:{reset} {stone}{excel_path}{reset}")
+  else:
+    print(f"\n  {sand}No Excel file found at {excel_path}")
+    print(f"  {stone}Skipping Excel tracking.{reset}")
+    update_excel = False
 
 # Read the message file
 f = open("files/groupMessage.txt", "r")
@@ -74,7 +77,7 @@ if not update_excel:
 from src.excelUpdater import getAvailableColumns, updateExcel
 
 # Show available columns and ask which one to update
-columns = getAvailableColumns()
+columns = getAvailableColumns(excel_path)
 print(f"\n  {bold}{sand}Available columns:{reset}")
 for letter, header in columns:
   print(f"  {teal}  {letter}: {header}{reset}")
@@ -96,7 +99,7 @@ question = f"Write results to column {col}?"
 reply = userConfirmation(question, default="no")
 
 if reply == True:
-  updated = updateExcel(results, col)
+  updated = updateExcel(results, col, excel_path)
   print(f"\n  {sage}{bold}Excel updated — {updated} row(s) written in column {col}.{reset}\n")
 else:
   print(f"\n  {stone}Excel not updated.{reset}\n")

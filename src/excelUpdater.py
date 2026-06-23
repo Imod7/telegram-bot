@@ -1,8 +1,23 @@
+import os
 from openpyxl import load_workbook
 from src.colors import *
 
+FILES_DIR = "files"
 EXCEL_PATH = "files/Support Channels - Integrations.xlsx"
 SHEET_NAME = "Channels"
+
+def promptExcelPath(default=EXCEL_PATH):
+  """Prompt for the Excel filename to update, defaulting to the standard tracker.
+  A bare filename is resolved inside files/; a value containing a path separator
+  is used as-is. Empty input keeps the default."""
+  default_name = os.path.basename(default)
+  print(f"\n  {bold}Excel filename{reset} {stone}[{default_name}]{reset}: ", end="")
+  entered = input().strip()
+  if not entered:
+    return default
+  if os.path.dirname(entered):
+    return entered
+  return os.path.join(FILES_DIR, entered)
 
 def getAvailableColumns(filepath=EXCEL_PATH):
   """Return a list of (column_letter, header_name) for columns D onwards."""

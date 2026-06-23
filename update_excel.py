@@ -29,8 +29,14 @@ for chat_id, success in results.items():
 
 print(f"\n  {sage}{len(sent)} sent{reset}, {rose}{len(failed)} failed{reset}")
 
+# Ask which Excel file to update
+excel_path = promptExcelPath()
+if not os.path.exists(excel_path):
+  print(f"\n  {rose}No Excel file found at {excel_path}.{reset}\n")
+  sys.exit()
+
 # Show available columns and ask which one to update
-columns = getAvailableColumns()
+columns = getAvailableColumns(excel_path)
 print(f"\n  {bold}{sand}Available columns:{reset}")
 for letter, header in columns:
   print(f"  {teal}  {letter}: {header}{reset}")
@@ -52,7 +58,7 @@ question = f"Write results to column {col}?"
 reply = userConfirmation(question, default="no")
 
 if reply == True:
-  updated = updateExcel(results, col)
+  updated = updateExcel(results, col, excel_path)
   print(f"\n  {sage}{bold}Excel updated — {updated} row(s) written in column {col}.{reset}\n")
 else:
   print(f"\n  {stone}Excel not updated.{reset}\n")
