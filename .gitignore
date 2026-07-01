@@ -1,1 +1,15 @@
 .env
+
+# Recipient group lists (contain private chat IDs) — never commit
+groups*
+
+# Send results and tracker (also contain private chat IDs)
+files/last_send_results.json
+files/*.xlsx
+
+# Generated per-channel message outputs
+files/out/
+
+# OS / Python cruft
+.DS_Store
+__pycache__/
