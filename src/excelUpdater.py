@@ -3,7 +3,7 @@ from openpyxl import load_workbook
 from src.colors import *
 
 FILES_DIR = "files"
-EXCEL_PATH = "files/Support Channels - Integrations.xlsx"
+EXCEL_PATH = "files/External Partners Channels.xlsx"
 SHEET_NAME = "Channels"
 
 def promptExcelPath(default=EXCEL_PATH):

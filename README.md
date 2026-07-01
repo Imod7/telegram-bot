@@ -4,11 +4,12 @@
 
 This project provides a Python CLI tool for broadcasting a predefined, HTML-formatted message to multiple Telegram group chats via the Telegram Bot API. It includes optional Excel-based tracking of send results for auditing and record-keeping purposes.
 
-The workflow consists of three main capabilities:
+The workflow consists of four main capabilities:
 
-1. **Bot Setup** — Creating and configuring a Telegram bot through BotFather.
-2. **Message Broadcasting** — Sending a formatted message to all designated Telegram group chats in a single execution.
-3. **Result Tracking** — Recording delivery outcomes (success/failure) in an Excel spreadsheet.
+1. **Bot Setup**: Creating and configuring a Telegram bot through BotFather.
+2. **Multi-Channel Formatting**: Authoring a message once in Markdown and generating Telegram, Element, Slack, and email versions with a single command.
+3. **Message Broadcasting**: Sending a formatted message to all designated Telegram group chats in a single execution.
+4. **Result Tracking**: Recording delivery outcomes (success/failure) in an Excel spreadsheet.
 
 ## Prerequisites
 
@@ -54,9 +55,11 @@ The workflow consists of three main capabilities:
 
 ### Configuring the Message
 
-1. Edit the file `files/groupMessage.txt` with the desired message content.
-2. The message supports HTML formatting using the tags documented in the [Telegram Bot API - HTML style](https://core.telegram.org/bots/api#html-style) reference.
-3. **Supported HTML tags:**
+Write the message once in `files/message.md` (Markdown) and generate the Telegram version with `python3 format_message.py` — see [Generating Multi-Channel Formats](#generating-multi-channel-formats) below. The bot reads the generated `files/out/telegram.html`.
+
+The Telegram output uses HTML formatting as documented in the [Telegram Bot API - HTML style](https://core.telegram.org/bots/api#html-style) reference. If you hand-edit `files/out/telegram.html` directly (instead of regenerating it), the following applies:
+
+1. **Supported HTML tags:**
     - `<b>`, `<strong>` — Bold
     - `<i>`, `<em>` — Italic
     - `<u>`, `<ins>` — Underline
@@ -65,7 +68,39 @@ The workflow consists of three main capabilities:
     - `<pre>` — Code block
     - `<a href="...">` — Hyperlink
     - `<blockquote>` — Blockquote
-4. Tags such as `<ul>`, `<li>`, `<br>`, and `<p>` are **not supported** by Telegram and will cause a send error. Use plain-text bullet characters (`•`, `-`) instead.
+2. Tags such as `<ul>`, `<li>`, `<br>`, and `<p>` are **not supported** by Telegram and will cause a send error. Use plain-text bullet characters (`•`, `-`) instead. (The formatter handles all of this for you.)
+
+### Generating Multi-Channel Formats
+
+`format_message.py` renders a single Markdown source into the four dialects used across channels, so the same announcement can go to Telegram, Element, Slack, and email without re-formatting by hand.
+
+1. Write the message once in `files/message.md` using standard Markdown:
+    - `# Title`: title (becomes the email **Subject**; bold in chat channels)
+    - `## Section`: section header
+    - `**bold**`, `*italic*` / `_italic_`
+    - `[label](url)`: link
+    - `- item`: bullet
+    - blank line: paragraph break
+2. Run the formatter (no virtualenv needed — it uses only the Python standard library):
+    ```
+    python3 format_message.py
+    ```
+3. The script writes one file per channel to `files/out/`:
+
+    | File | Channel | Format |
+    |------|---------|--------|
+    | `telegram.html` | Telegram | HTML subset (`<b>`, `<i>`, `<a>`, `•` bullets) |
+    | `element.md` | Element / Matrix | Markdown |
+    | `slack.txt` | Slack | mrkdwn (`*bold*`, `<url\|label>`, `•` bullets) |
+    | `email.txt` | Email | Plain text (Subject line, greeting, sign-off) |
+
+    The bot (`main.py`) reads `files/out/telegram.html` directly, so no extra step is needed for Telegram.
+
+4. Copy-paste `element.md`, `slack.txt`, and `email.txt` into their respective channels. Telegram is sent by `main.py` as usual.
+
+**Notes:**
+- Reserved characters (`&`, `<`, `>`) are escaped automatically for Telegram and Slack; links are preserved intact.
+- The email greeting and sign-off are editable constants (`EMAIL_GREETING`, `EMAIL_SIGNOFF`) at the top of `format_message.py` and appear only in the email output — they never leak into the chat formats.
 
 ### Configuring the Recipient Groups
 
@@ -90,7 +125,7 @@ If the bot needs to be added to a group that is not yet listed in `groups.txt`:
 ### Pre-Send Verification
 
 1. Always send the message to a test group first (e.g., "Integration Testing Playground") to verify correct formatting before broadcasting to all designated groups.
-2. If the message appears truncated or fails to send, inspect `files/groupMessage.txt` for special characters (such as `&`) that may conflict with HTML parsing. Replace them with the appropriate HTML entities (e.g., `&amp;`).
+2. If the message appears truncated or fails to send, inspect `files/out/telegram.html` for special characters (such as `&`) that may conflict with HTML parsing. The formatter escapes these automatically; if you hand-edited the file, replace them with the appropriate HTML entities (e.g., `&amp;`).
 
 ### Running the Script
 
@@ -98,8 +133,8 @@ If the bot needs to be added to a group that is not yet listed in `groups.txt`:
     ```
     source env-telegram-bot/bin/activate
     ```
-2. Verify the target groups in `files/groups.txt`.
-3. Confirm there are no unsupported characters or tags in `files/groupMessage.txt` (refer to the Troubleshooting section).
+2. Generate the Telegram message from your source: `python3 format_message.py` (writes `files/out/telegram.html`).
+3. Verify the target groups in `files/groups.txt`.
 4. Verify the API key is present in the `.env` file.
 5. Execute the script:
     ```
@@ -133,21 +168,24 @@ This script will:
 3. List the available columns from the Excel sheet header row.
 4. Prompt for the target column and write `Yes`/`No` values accordingly.
 
-The Excel file used is `files/Support Channels - Integrations.xlsx` (sheet: `Channels`). The script matches chat IDs from column A against the send results and writes to the selected column.
+The Excel file used is `files/External Partners Channels.xlsx` (sheet: `Channels`). The script matches chat IDs from column A against the send results and writes to the selected column.
 
 ## Project Structure
 
 ```
 telegram-bot/
 ├── main.py                # Entry point — message broadcasting flow
+├── format_message.py      # Render message.md into Telegram/Element/Slack/email formats
 ├── update_excel.py        # Standalone Excel tracking update
 ├── .env                   # Bot API key (not committed)
 ├── requirements.txt       # Python dependencies
 ├── files/
-│   ├── groupMessage.txt   # Message body (HTML formatted)
+│   ├── message.md         # Canonical message source (Markdown) — the one file you edit
+│   ├── out/               # Generated per-channel formats; the bot sends out/telegram.html
+│   │                      #   (also: element.md, slack.txt, email.txt)
 │   ├── groups.txt         # Target group chat IDs and names
 │   ├── last_send_results.json  # Auto-saved delivery results
-│   └── Support Channels - Integrations.xlsx  # Tracking spreadsheet
+│   └── External Partners Channels.xlsx  # Tracking spreadsheet
 └── src/
     ├── colors.py          # Terminal color definitions
     ├── userConfirmation.py # Yes/no prompt utility
@@ -176,7 +214,7 @@ Ensure all dependencies remain up to date:
 
 ## Troubleshooting
 
-- **Truncated or unsent messages:** Special characters in `files/groupMessage.txt` may interfere with HTML parsing. Replace `&` with `&amp;`, `#` with `%23`, and ensure no unsupported HTML tags (`<ul>`, `<li>`, `<br>`, `<p>`) are present. Use plain-text bullet characters instead.
+- **Truncated or unsent messages:** Special characters in `files/out/telegram.html` may interfere with HTML parsing. The formatter escapes `&`, `<`, `>` automatically; if you hand-edited the file, replace `&` with `&amp;` and ensure no unsupported HTML tags (`<ul>`, `<li>`, `<br>`, `<p>`) are present. Use plain-text bullet characters instead.
 - **`ModuleNotFoundError: No module named 'requests'`:** This indicates the virtual environment is not activated. Run `source env-telegram-bot/bin/activate` before executing the script.
 - **Message not delivered to a specific group:** Verify the chat ID by navigating to `https://api.telegram.org/bot<YourBOTToken>/getUpdates` in your browser. If the ID is incorrect, update `files/groups.txt` with the correct value.
 

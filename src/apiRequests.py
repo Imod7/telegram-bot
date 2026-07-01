@@ -25,22 +25,30 @@ def sendGroupMessage(groupChats, groupMessage):
   print(f"  {bold}{slate}Sending messages...{reset}")
   print(LINE)
 
-  for i, (key, value) in enumerate(groupChats.items(), 1):
-    payload = {
-      "chat_id": str(key),
-      "parse_mode": "HTML",
-      "text": groupMessage,
-    }
-    response = requests.post(sendMsgUrl, json=payload)
-    if response.ok:
-      print(f"  {sage}  [{i}/{total}] Sent to {value.strip()}{reset}")
-      success += 1
-      results[key] = True
-    else:
-      error = response.json().get("description", response.text)
-      print(f"  {rose}  [{i}/{total}] Failed: {value.strip()} - {error}{reset}")
-      failed += 1
-      results[key] = False
+  try:
+    for i, (key, value) in enumerate(groupChats.items(), 1):
+      payload = {
+        "chat_id": str(key),
+        "parse_mode": "HTML",
+        "text": groupMessage,
+      }
+      response = requests.post(sendMsgUrl, json=payload)
+      if response.ok:
+        print(f"  {sage}  [{i}/{total}] Sent to {value.strip()}{reset}")
+        success += 1
+        results[key] = True
+      else:
+        error = response.json().get("description", response.text)
+        print(f"  {rose}  [{i}/{total}] Failed: {value.strip()} - {error}{reset}")
+        failed += 1
+        results[key] = False
+      # Persist after every send so an interrupt (Ctrl+C) never loses progress
+      with open(RESULTS_FILE, "w") as rf:
+        json.dump(results, rf, indent=2)
+  except KeyboardInterrupt:
+    print(f"\n  {sand}Interrupted. {success + failed}/{total} attempted; "
+          f"results saved to {RESULTS_FILE}.{reset}")
+    return results
 
   # Summary
   print(f"\n{DOUBLE_LINE}")

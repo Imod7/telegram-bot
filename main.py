@@ -21,9 +21,14 @@ if update_excel:
     print(f"  {stone}Skipping Excel tracking.{reset}")
     update_excel = False
 
-# Read the message file
-f = open("files/groupMessage.txt", "r")
-groupMessage = f.read()
+# Read the Telegram message (generated from files/message.md by format_message.py)
+TELEGRAM_MESSAGE_FILE = "files/out/telegram.html"
+if not os.path.exists(TELEGRAM_MESSAGE_FILE):
+  print(f"\n  {rose}No Telegram message found at {TELEGRAM_MESSAGE_FILE}.{reset}")
+  print(f"  {stone}Write your message in files/message.md, then run: python3 format_message.py{reset}\n")
+  sys.exit()
+with open(TELEGRAM_MESSAGE_FILE, "r") as f:
+  groupMessage = f.read()
 
 # Show the message that will be sent
 print(f"\n  {bold}{sand}Message Preview:{reset}")
