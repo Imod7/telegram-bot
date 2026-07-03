@@ -79,16 +79,25 @@ if not update_excel:
   print(f"\n  {stone}Done. Excel update was skipped.{reset}\n")
   sys.exit()
 
-from src.excelUpdater import getAvailableColumns, updateExcel
+from src.excelUpdater import getAvailableColumns, updateExcel, columnHasData
 
 # Show available columns and ask which one to update
 columns = getAvailableColumns(excel_path)
+if len(columns) == 0:
+  print(f"\n  {rose}No columns found in the sheet. Excel not updated.{reset}\n")
+  sys.exit()
+
 print(f"\n  {bold}{sand}Available columns:{reset}")
 for letter, header in columns:
   print(f"  {teal}  {letter}: {header}{reset}")
 
-print(f"\n  {bold}Enter the column letter to update (e.g. AI):{reset} ", end="")
+# Default to the last column in the sheet (usually the newest tracking column)
+default_col, default_header = columns[-1]
+print(f"\n  {bold}Column to update{reset} {stone}[{default_col}: {default_header}]{reset}")
+print(f"  {stone}Press Enter to keep the last column, or type a different letter:{reset} ", end="")
 col = input().strip().upper()
+if not col:
+  col = default_col
 
 # Validate the column letter
 valid_letters = [letter for letter, _ in columns]
@@ -99,6 +108,13 @@ if col not in valid_letters:
 # Show which column was selected
 header = next(h for l, h in columns if l == col)
 print(f"  {stone}Selected: {col} ({header}){reset}")
+
+# Warn before overwriting a column that already has data
+if columnHasData(excel_path, col):
+  print(f"\n  {sand}Warning: column {col} ({header}) already has data and will be overwritten.{reset}")
+  if userConfirmation(f"Overwrite existing values in column {col}?", default="no") != True:
+    print(f"\n  {stone}Excel not updated.{reset}\n")
+    sys.exit()
 
 question = f"Write results to column {col}?"
 reply = userConfirmation(question, default="no")

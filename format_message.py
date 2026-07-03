@@ -93,7 +93,12 @@ def _inline(text, target):
         if target == "telegram":
             return f'<a href="{html.escape(url, quote=True)}">{html.escape(label, quote=False)}</a>'
         if target == "slack":
-            return f"<{url}|{label}>"
+            # Paste-friendly: the <url|label> mrkdwn form only renders when a
+            # message is posted via the Slack API, not when pasted into the
+            # composer. A bare URL is the only thing Slack auto-links on paste,
+            # so keep the label as plain text and leave the URL bare (no parens,
+            # which can suppress auto-linking).
+            return f"{label} {url}" if label != url else url
         if target == "email":
             return f"{label} ({url})"
         return f"[{label}]({url})"  # element / markdown

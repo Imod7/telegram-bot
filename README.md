@@ -11,6 +11,55 @@ The workflow consists of four main capabilities:
 3. **Message Broadcasting**: Sending a formatted message to all designated Telegram group chats in a single execution.
 4. **Result Tracking**: Recording delivery outcomes (success/failure) in an Excel spreadsheet.
 
+## Quick Start — Sending a Message (do this every time)
+
+Assumes the one-time [Setup](#setup-instructions) (clone + virtualenv + `.env` bot token) is already done. If not, clone the repo first:
+
+```bash
+git clone <repository-url>
+cd telegram-bot
+```
+
+Then, each time you want to send a message:
+
+```bash
+# 1. Go to the project folder
+cd telegram-bot
+
+# 2. Activate the virtual environment
+source env-telegram-bot/bin/activate
+
+# 3. Write your message (this is the ONLY content file you edit)
+#    Open files/message.md in your editor and write it in Markdown.
+#    # Title  → subject/bold, ## Section → header, **bold**, [label](url), - bullet
+
+# 4. Generate the Telegram (and Element/Slack/email) versions
+python3 format_message.py          # writes files/out/telegram.html + siblings
+
+# 5. Set the recipient groups (the bot ONLY reads files/groups.txt)
+#    Either edit files/groups.txt directly, or copy in a saved list:
+cp groups-up.txt files/groups.txt          # full list
+# cp files/groups-test.txt files/groups.txt  # test group only — do this first!
+#    Format per line:  -1001234567890, Group Name
+
+# 6. Send (previews the message + group list and asks you to confirm)
+python3 main.py
+
+# 7. Done
+deactivate
+```
+
+**Recap of the four inputs:**
+
+| What | Where |
+|------|-------|
+| Message content | Edit `files/message.md`, then run `python3 format_message.py` |
+| Recipient groups | Put lines in `files/groups.txt` |
+| Bot token | `.env` file - set once, no need to touch each time |
+| Send | `python3 main.py` |
+
+> **Always test first:** put only your test group in `files/groups.txt` and run a send to check formatting before copying in the full list.
+
 ## Prerequisites
 
 - **Python 3** — Install via [python.org](https://www.python.org/) or Homebrew (`brew install python3`)

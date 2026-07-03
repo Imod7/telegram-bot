@@ -11,13 +11,28 @@ def promptExcelPath(default=EXCEL_PATH):
   A bare filename is resolved inside files/; a value containing a path separator
   is used as-is. Empty input keeps the default."""
   default_name = os.path.basename(default)
-  print(f"\n  {bold}Excel filename{reset} {stone}[{default_name}]{reset}: ", end="")
+  print(f"\n  {bold}Excel filename{reset} {stone}[{default_name}]{reset}")
+  print(f"  {stone}Press Enter to keep the default, or type a different filename:{reset} ", end="")
   entered = input().strip()
   if not entered:
     return default
   if os.path.dirname(entered):
     return entered
   return os.path.join(FILES_DIR, entered)
+
+def columnHasData(filepath, column_letter):
+  """Return True if the given column already has a non-empty cell from row 2
+  onwards (i.e. it looks like it was used in a previous send)."""
+  wb = load_workbook(filepath)
+  ws = wb[SHEET_NAME]
+  has_data = False
+  for row in range(2, ws.max_row + 1):
+    value = ws[f"{column_letter}{row}"].value
+    if value not in (None, ""):
+      has_data = True
+      break
+  wb.close()
+  return has_data
 
 def getAvailableColumns(filepath=EXCEL_PATH):
   """Return a list of (column_letter, header_name) for columns D onwards."""
