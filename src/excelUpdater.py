@@ -59,7 +59,7 @@ def updateExcel(results, column_letter, filepath=EXCEL_PATH):
     cell_a = row[0].value
     if not cell_a:
       continue
-    # Column A format: "-1001639374617, Polkadot (DOT) / Binance Tech, EXCHANGE"
+    # Column A format: "-1001234567890, Example Group Name, CATEGORY"
     # Extract the chat ID (everything before the first comma)
     chat_id = str(cell_a).split(",")[0].strip()
     if chat_id in results:

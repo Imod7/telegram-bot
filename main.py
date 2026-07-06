@@ -58,9 +58,59 @@ if len(groupChats) == 0:
   print(f"\n  {rose}No groups found in groups.txt. Nothing to send.{reset}\n")
   sys.exit()
 
+# Resume support: if a previous run left a results file, offer to skip the
+# groups already sent successfully and send only the remaining ones
+# (previously failed + never attempted). Groups whose delivery was UNCERTAIN
+# (timed out mid-send) are held back from auto-resend and flagged, since
+# re-sending them could duplicate a message that already arrived.
+import datetime
+prior_results = loadPriorResults()
+prior_ambiguous = loadAmbiguous()
+already_sent = {k for k, ok in prior_results.items() if ok}
+ambiguous_ids = {k for k in prior_ambiguous if k in groupChats}
+sendChats = {k: v for k, v in groupChats.items()
+             if k not in already_sent and k not in ambiguous_ids}
+seed = None
+seed_ambiguous = None
+
+if (already_sent or ambiguous_ids) and len(sendChats) < len(groupChats):
+  mtime = datetime.datetime.fromtimestamp(os.path.getmtime(RESULTS_FILE))
+  print(f"\n  {bold}{sand}Previous send found{reset} {stone}(last updated {mtime:%Y-%m-%d %H:%M}){reset}")
+  print(f"  {sage}  {len(already_sent)} group(s) already sent successfully{reset}")
+  print(f"  {teal}  {len(sendChats)} group(s) remaining (not-yet-sent + previously failed){reset}")
+  if ambiguous_ids:
+    print(f"  {sand}  {len(ambiguous_ids)} group(s) with UNCERTAIN delivery (timed out — verify manually):{reset}")
+    for k in ambiguous_ids:
+      print(f"  {sand}    • {groupChats[k].strip()}{reset}")
+
+  resume = userConfirmation(
+    f"Resume — skip the {len(already_sent)} already sent and send only the {len(sendChats)} remaining?",
+    default="no",
+  )
+  if resume:
+    seed = prior_results
+    seed_ambiguous = prior_ambiguous
+    # The uncertain ones are held back by default. Offer to re-send anyway.
+    if ambiguous_ids and userConfirmation(
+        f"Also re-send to the {len(ambiguous_ids)} UNCERTAIN group(s)? (may duplicate)",
+        default="no"):
+      for k in ambiguous_ids:
+        sendChats[k] = groupChats[k]
+  elif userConfirmation("Start fresh instead — send to ALL groups (resets the record)?", default="no"):
+    sendChats = groupChats
+    seed = None
+    seed_ambiguous = None
+  else:
+    print(f"\n  {rose}Cancelled. No messages were sent.{reset}\n")
+    sys.exit()
+
+if len(sendChats) == 0:
+  print(f"\n  {sage}Nothing to send — all groups already sent (or held for manual check).{reset}\n")
+  sys.exit()
+
 # Show the target groups
-print(f"\n  {bold}{sand}Recipients ({len(groupChats)} group{'s' if len(groupChats) != 1 else ''}):{reset}")
-for i, (key, value) in enumerate(groupChats.items(), 1):
+print(f"\n  {bold}{sand}Recipients ({len(sendChats)} group{'s' if len(sendChats) != 1 else ''}):{reset}")
+for i, (key, value) in enumerate(sendChats.items(), 1):
   print(f"  {teal}  {i}. {value.strip()}{reset}")
 
 # Confirm sending
@@ -72,7 +122,7 @@ if reply != True:
   print(f"\n  {rose}Cancelled. No messages were sent.{reset}\n")
   sys.exit()
 
-results = sendGroupMessage(groupChats, groupMessage)
+results = sendGroupMessage(sendChats, groupMessage, prior_results=seed, prior_ambiguous=seed_ambiguous)
 
 # Update Excel if the user opted in at the start
 if not update_excel:

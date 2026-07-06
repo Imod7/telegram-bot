@@ -5,6 +5,7 @@ groups*
 
 # Send results and tracker (also contain private chat IDs)
 files/last_send_results.json
+files/last_send_ambiguous.json
 files/*.xlsx
 
 # Generated per-channel message outputs
