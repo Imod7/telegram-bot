@@ -13,6 +13,8 @@ Edit `files/message.md` using standard Markdown:
 - `**bold**`, `*italic*` / `_italic_`
 - `[label](url)` — link
 - `- item` — bullet
+- `` `inline code` `` — monospace
+- ```` ``` ```` fenced block — code block, kept verbatim
 - blank line — paragraph break
 
 ## 2. Generate the per-channel formats
@@ -27,7 +29,7 @@ It writes one file per channel to `files/out/`:
 
 | File | Channel | Format |
 |------|---------|--------|
-| `telegram.html` | Telegram | HTML subset (`<b>`, `<i>`, `<a>`, `•` bullets) |
+| `telegram.html` | Telegram | HTML subset (`<b>`, `<i>`, `<a>`, `<code>`, `<pre>`, `•` bullets) |
 | `element.md` | Element / Matrix | Markdown |
 | `slack.txt` | Slack | mrkdwn (`*bold*`, `<url\|label>`, `•` bullets) |
 | `email.txt` | Email | Plain text (Subject line, greeting, sign-off) |
@@ -40,6 +42,9 @@ Telegram**. Copy-paste `element.md`, `slack.txt`, and `email.txt` into their res
 
 **Notes**
 - Reserved characters (`&`, `<`, `>`) are escaped automatically for Telegram and Slack; links are preserved intact.
+- Code is never re-formatted: text inside `` ` `` or a ``` ``` ``` fence keeps its `_underscores_` and
+  `*stars*` verbatim instead of being read as emphasis. Telegram gets `<code>` / `<pre>`, Element and
+  Slack keep the fences, and email drops the markers.
 - The email greeting and sign-off are editable constants (`EMAIL_GREETING`, `EMAIL_SIGNOFF`) at the top of `format_message.py`; they appear only in the email output and never leak into the chat formats.
 
 ## Telegram HTML details (only if you hand-edit `telegram.html`)

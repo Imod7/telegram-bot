@@ -19,6 +19,8 @@ Supported source syntax:
   - item             -> bullet
   **bold**  *italic*  _italic_
   [label](url)
+  `inline code`      -> monospace, never re-formatted
+  ``` fenced block   -> code block, kept verbatim (Telegram <pre>)
   blank line         -> paragraph break
 """
 
@@ -44,6 +46,8 @@ LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
 BOLD_RE = re.compile(r"\*\*([^*]+)\*\*")
 ITALIC_STAR_RE = re.compile(r"(?<!\*)\*([^*]+)\*(?!\*)")
 ITALIC_US_RE = re.compile(r"_([^_]+)_")
+CODE_RE = re.compile(r"`([^`]+)`")
+FENCE_RE = re.compile(r"^```\s*(\S*)\s*$")
 
 TARGETS = {
     # name: (output filename, target key)
@@ -68,7 +72,18 @@ def _wrap(inner, kind, target):
 def _inline(text, target):
     """Render inline markup (links, bold, italic) for a target, escaping
     special characters where the target needs it (Telegram HTML / Slack)."""
-    # 1. Stash links so their URLs are not touched by escaping or emphasis.
+    # 1. Stash inline code first: its contents are verbatim, so no escaping,
+    #    emphasis or link rendering may touch them (shell snippets are full of
+    #    _underscores_ and *stars* that are not markup).
+    codes = []
+
+    def stash_code(m):
+        codes.append(m.group(1))
+        return f"\x00CODE{len(codes) - 1}\x00"
+
+    text = CODE_RE.sub(stash_code, text)
+
+    # 2. Stash links so their URLs are not touched by escaping or emphasis.
     links = []
 
     def stash(m):
@@ -77,18 +92,18 @@ def _inline(text, target):
 
     text = LINK_RE.sub(stash, text)
 
-    # 2. Escape reserved characters.
+    # 3. Escape reserved characters.
     if target == "telegram":
         text = html.escape(text, quote=False)  # & < >
     elif target == "slack":
         text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
-    # 3. Emphasis (bold before italic so ** is consumed first).
+    # 4. Emphasis (bold before italic so ** is consumed first).
     text = BOLD_RE.sub(lambda m: _wrap(m.group(1), "b", target), text)
     text = ITALIC_STAR_RE.sub(lambda m: _wrap(m.group(1), "i", target), text)
     text = ITALIC_US_RE.sub(lambda m: _wrap(m.group(1), "i", target), text)
 
-    # 4. Reinsert links, rendered per target.
+    # 5. Reinsert links, then code spans, rendered per target.
     def render_link(label, url):
         if target == "telegram":
             return f'<a href="{html.escape(url, quote=True)}">{html.escape(label, quote=False)}</a>'
@@ -105,7 +120,34 @@ def _inline(text, target):
 
     for i, (label, url) in enumerate(links):
         text = text.replace(f"\x00LINK{i}\x00", render_link(label, url))
+    for i, code in enumerate(codes):
+        text = text.replace(f"\x00CODE{i}\x00", _code_span(code, target))
     return text
+
+
+def _code_span(code, target):
+    """Render `inline code`. Only Telegram needs escaping (it parses HTML);
+    the other outputs are pasted by hand, where escapes would show literally."""
+    if target == "telegram":
+        return f"<code>{html.escape(code, quote=False)}</code>"
+    if target == "email":
+        return code  # plain text: drop the markers
+    return f"`{code}`"  # element / slack
+
+
+def _code_block(lines, lang, target):
+    """Render a ``` fenced block. Contents are never re-formatted."""
+    body = "\n".join(lines)
+    if target == "telegram":
+        escaped = html.escape(body, quote=False)
+        if lang:
+            return f'<pre><code class="language-{html.escape(lang, quote=True)}">{escaped}</code></pre>'
+        return f"<pre>{escaped}</pre>"
+    if target == "email":
+        return body  # plain text: fences would just be noise
+    if target == "slack":
+        return f"```\n{body}\n```"
+    return f"```{lang}\n{body}\n```"  # element / markdown
 
 
 def _header(text, target):
@@ -129,8 +171,25 @@ def convert(source, target):
     """Render the full Markdown source into one target dialect."""
     subject = None
     out = []
+    code_lines = None  # non-None while inside a ``` fence
+    code_lang = ""
     for raw in source.splitlines():
         s = raw.strip()
+
+        fence = FENCE_RE.match(s)
+        if code_lines is not None:
+            if fence:
+                out.append(_code_block(code_lines, code_lang, target))
+                code_lines = None
+                code_lang = ""
+            else:
+                code_lines.append(raw.rstrip())  # keep indentation verbatim
+            continue
+        if fence:
+            code_lines = []
+            code_lang = fence.group(1)
+            continue
+
         if not s:
             out.append("")
             continue
@@ -147,6 +206,9 @@ def convert(source, target):
             out.append(_bullet(s[2:].strip(), target))
         else:
             out.append(_inline(s, target))
+
+    if code_lines is not None:  # unterminated fence: emit what we have
+        out.append(_code_block(code_lines, code_lang, target))
 
     body = "\n".join(out).strip("\n")
 
